@@ -54,7 +54,7 @@ function App() {
             Underdog EDH Deck helper
           </Typography>
 
-          <div style={{ marginTop: "55px", marginBottom: "55px", width: "95%", maxWidth: "500px" }}>
+          <div style={{ marginTop: "55px", marginBottom: "55px", width: "95%", maxWidth: "500px", minWidth: "178px" }}>
             <form noValidate autoComplete="off">
               <TextField fullWidth id="outlined-basic2" label="Commander (Optional)" variant="outlined" style={{ marginBottom: "15px" }} onChange={handleCommanderChange} />
             </form>
