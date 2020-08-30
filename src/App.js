@@ -38,6 +38,10 @@ function App() {
     setQuery(e.target.value);
   }
 
+  function handleCommanderChange(e) {
+    setCommanderName(e.target.value);
+  }
+
   return (
     
     <ThemeProvider theme={theme}>
@@ -49,12 +53,14 @@ function App() {
           </Typography>
 
           <div style={{marginTop: "55px", marginBottom: "55px"}}>
-          <TextField value={commanderName} id="outlined-basic" label="Commander" variant="outlined" style={{marginBottom: "15px"}}/>
+            <form noValidate autoComplete="off">
+              <TextField id="outlined-basic2" label="Commander" variant="outlined" style={{marginBottom: "15px"}} onChange={handleCommanderChange}/>
+            </form>
             <form noValidate autoComplete="off">
               <TextField value={query} id="outlined-basic" label="Cardname" variant="outlined" onChange={handleChange} />
             </form>
           </div>
-          {query && <EdhRecSearch query={query} commander={commanderName}/>}
+          {query && <EdhRecSearch query={query} commanderName={commanderName}/>}
         </center>
       </div>
     </ThemeProvider>

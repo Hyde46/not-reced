@@ -11,9 +11,16 @@ import {
   } from 'react-hooks-async';
 
 
-const fetchEdhRecTask = async ({signal}, id) => {
-    const url = `https://edhrec-json.s3.amazonaws.com/en/top.json`;
+const fetchEdhRecTask = async ({signal}, name) => {
+    console.log("fetching edh rec task");
+    console.log(name);
+    if (name === "" || name === undefined || name === null){
+        return "";
+    }    
+    const url = `https://edhrec-json.s3.amazonaws.com/en/commanders/${name}.json`;
+    console.log("fetching data now");
     const response = await fetch(url, { signal });
+    console.log("got response");
     const data = await response.json();
     return data;
   }
@@ -60,7 +67,6 @@ const isCommanderCardRecomended = function(body, card) {
             }
         })
     });
-    console.log(card_name);
     return [found_card, card_name, sanitzed_card];
 }
 
@@ -89,15 +95,32 @@ const prettyResponse = function(cardFound) {
   
 
 const EdhRecSearch = ({ query, commanderName }) => {
+    console.log(commanderName);
+    commanderName = commanderName === undefined || commanderName === null ?  "" : commanderName;
+    let sanitizedCommander = sanitizeCardName(commanderName);
+    const delayCommanderTask = useAsyncTaskDelay(500);
+    const fetchCommanderRecs = useAsyncTask(fetchEdhRecTask);
+    const combinedCommanderTask = useAsyncCombineSeq(delayCommanderTask, fetchCommanderRecs);
+    useAsyncRun(combinedCommanderTask, sanitizedCommander);
+   
+
     const delayTask = useAsyncTaskDelay(500);
     const fetchTop = useAsyncTask(fetchRecomendations);
     const combinedTask = useAsyncCombineSeq(delayTask, fetchTop);
     useAsyncRun(combinedTask);
+
+    if (commanderName !== ""){
+        if (delayCommanderTask.pending) return <CircularProgress/>;
+        if (fetchCommanderRecs.aborted) return <div>...</div>;
+        if (fetchCommanderRecs.error) return <div>Error while fetching data...</div>;
+        if (fetchCommanderRecs.pending) return <div>Aborted</div>;
+    }
     if (delayTask.pending) return <CircularProgress/>;
     if (fetchTop.aborted) return <div>...</div>;
     if (fetchTop.error) return <div>Error while fetching data...</div>;
     if (fetchTop.pending) return <div>Aborted</div>;
-    const cardFound = isCardRecomended(fetchTop.result,query )
+    const cardFound = isCardRecomended(fetchTop.result,query );
+    //const commanderCardFound = isCommanderCardRecomended(fetchCommanderRecs.result, sanitizedCommander);
     return(prettyResponse(cardFound));
 }
 
