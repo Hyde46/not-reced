@@ -46,7 +46,7 @@ function App() {
             Hipster EDH Deck helper
           </Typography>
 
-          <div style={{margin: "55px"}}>
+          <div style={{marginTop: "55px", marginBottom: "55px"}}>
             <form noValidate autoComplete="off">
               <TextField value={query} id="outlined-basic" label="Cardname" variant="outlined" onChange={handleChange} />
             </form>
