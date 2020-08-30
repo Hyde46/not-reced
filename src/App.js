@@ -54,12 +54,12 @@ function App() {
             Underdog EDH Deck helper
           </Typography>
 
-          <div style={{ marginTop: "55px", marginBottom: "55px" }}>
+          <div style={{ marginTop: "55px", marginBottom: "55px", width: "50%" }}>
             <form noValidate autoComplete="off">
-              <TextField id="outlined-basic2" label="Commander (Optional)" variant="outlined" style={{ marginBottom: "15px" }} onChange={handleCommanderChange} />
+              <TextField fullWidth id="outlined-basic2" label="Commander (Optional)" variant="outlined" style={{ marginBottom: "15px" }} onChange={handleCommanderChange} />
             </form>
             <form noValidate autoComplete="off">
-              <TextField value={query} id="outlined-basic" label="Cardname" variant="outlined" onChange={handleChange} />
+              <TextField fullWidth value={query} id="outlined-basic" label="Cardname" variant="outlined" onChange={handleChange} />
             </form>
           </div>
           {query && <EdhRecSearch query={query} commanderName={commanderName} />}
