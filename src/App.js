@@ -47,7 +47,7 @@ function App() {
   return (
 
     <ThemeProvider theme={theme}>
-      <div className="App" style={{ margin: "125px" }}>
+      <div className="App" style={{ marginTop: "125px", marginBottom: "125px" }}>
         <center>
 
           <Typography variant="h5" component="h5">
