@@ -10,17 +10,13 @@ import {
     useAsyncTask
   } from 'react-hooks-async';
 
-
+let COMMANDER = "";
 const fetchEdhRecTask = async ({signal}, name) => {
-    console.log("fetching edh rec task");
-    console.log(name);
-    if (name === "" || name === undefined || name === null){
+    if (COMMANDER === "" || COMMANDER === undefined || COMMANDER === null){
         return "";
     }    
-    const url = `https://edhrec-json.s3.amazonaws.com/en/commanders/${name}.json`;
-    console.log("fetching data now");
+    const url = `https://edhrec-json.s3.amazonaws.com/en/commanders/${COMMANDER}.json`;
     const response = await fetch(url, { signal });
-    console.log("got response");
     const data = await response.json();
     return data;
   }
@@ -41,14 +37,14 @@ const sanitizeCardName = function(cardName) {
     return cardName;
 }
 const isCardRecomended = function(body, card) {
-    let found_card = true;
+    let found_card = false;
     let card_name = ""
     let sanitzed_card = sanitizeCardName(card);
     let cards = body.split('\n');
     cards.forEach( c => {
 
         if (c === sanitzed_card){
-            found_card = false;
+            found_card = true;
             card_name = card;
             return [found_card, card_name, sanitzed_card];
         }
@@ -56,14 +52,19 @@ const isCardRecomended = function(body, card) {
     return [found_card, card_name, sanitzed_card];
 }
 const isCommanderCardRecomended = function(body, card) {
-    let found_card = true;
+    console.log("finding commander cards");
+    if ( card === undefined || card === null || card === ""){
+        return [false, "", ""];
+    }
+    let found_card = false;
     let card_name = ""
     let sanitzed_card = sanitizeCardName(card);
+    console.log(body);
     body.container.json_dict.cardlists.forEach(json_dict => {
         json_dict.cardviews.forEach((e) => {
             if(e.sanitized === sanitzed_card){
                 card_name = e.name;
-                found_card = false;
+                found_card = true;
             }
         })
     });
@@ -75,13 +76,6 @@ const prettyResponse = function(cardFound) {
     let card_link = base_url + cardFound[2];
     if (cardFound[0]) {
         return (
-        <div>
-            <DoneAllIcon color="primary" style={{ fontSize: 40}}/>
-            <p> Card not recomended by EDHRec!</p>
-        </div>
-        );
-    } else {
-        return (
             <div>
                 <CloseIcon style={{ color:"#ED2939" , fontSize: 40}} />
                 <p> 
@@ -90,18 +84,25 @@ const prettyResponse = function(cardFound) {
                 </p>
             </div>
             );
+    } else {
+        return (
+            <div>
+                <DoneAllIcon color="primary" style={{ fontSize: 40}}/>
+                <p> Card not recomended by EDHRec!</p>
+            </div>
+            );
     }
 }
   
 
 const EdhRecSearch = ({ query, commanderName }) => {
-    console.log(commanderName);
+
     commanderName = commanderName === undefined || commanderName === null ?  "" : commanderName;
-    let sanitizedCommander = sanitizeCardName(commanderName);
+    COMMANDER = sanitizeCardName(commanderName);
     const delayCommanderTask = useAsyncTaskDelay(500);
     const fetchCommanderRecs = useAsyncTask(fetchEdhRecTask);
     const combinedCommanderTask = useAsyncCombineSeq(delayCommanderTask, fetchCommanderRecs);
-    useAsyncRun(combinedCommanderTask, sanitizedCommander);
+    useAsyncRun(combinedCommanderTask);
    
 
     const delayTask = useAsyncTaskDelay(500);
@@ -119,9 +120,9 @@ const EdhRecSearch = ({ query, commanderName }) => {
     if (fetchTop.aborted) return <div>...</div>;
     if (fetchTop.error) return <div>Error while fetching data...</div>;
     if (fetchTop.pending) return <div>Aborted</div>;
-    const cardFound = isCardRecomended(fetchTop.result,query );
-    //const commanderCardFound = isCommanderCardRecomended(fetchCommanderRecs.result, sanitizedCommander);
-    return(prettyResponse(cardFound));
+    const cardFound = isCardRecomended(fetchTop.result, query);
+    const commanderCardFound = isCommanderCardRecomended(fetchCommanderRecs.result, COMMANDER);
+    return(prettyResponse(cardFound || commanderCardFound));
 }
 
 export default EdhRecSearch;
