@@ -52,6 +52,7 @@ for c in categories:
     query_edhrec(c)
 
 with open('recomendations.txt','w') as my_text_file:
-    for s in card_set:
+    sorted_cards = sorted(card_set)
+    for s in sorted_cards:
         my_text_file.write(s + "\n")
 print("Finished successfully!")

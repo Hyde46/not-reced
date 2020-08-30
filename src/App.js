@@ -30,7 +30,7 @@ function App() {
   // if not found, isNotReced is true
   const [isNotReced, setIsReced] = useState(null);
 
-  const [commanderName, setCommanderName] = useState(null);
+  const [commanderName, setCommanderName] = useState("");
 
   const [query, setQuery] = useState('');
 

@@ -18,6 +18,12 @@ const fetchEdhRecTask = async ({signal}, id) => {
     return data;
   }
 
+  const fetchRecomendations = async ({signal}, id) => {
+      const url = 'https://raw.githubusercontent.com/Hyde46/not-reced/master/recomendations.txt';
+      const response = await fetch(url, { signal});
+      const data = await response.text();
+      return data;
+  }
 
 const sanitizeCardName = function(cardName) {
     cardName = cardName.toLowerCase();
@@ -27,8 +33,22 @@ const sanitizeCardName = function(cardName) {
     cardName = cardName.replace(/[\s]/g, '-');
     return cardName;
 }
-
 const isCardRecomended = function(body, card) {
+    let found_card = true;
+    let card_name = ""
+    let sanitzed_card = sanitizeCardName(card);
+    let cards = body.split('\n');
+    cards.forEach( c => {
+
+        if (c === sanitzed_card){
+            found_card = false;
+            card_name = card;
+            return [found_card, card_name, sanitzed_card];
+        }
+    })
+    return [found_card, card_name, sanitzed_card];
+}
+const isCommanderCardRecomended = function(body, card) {
     let found_card = true;
     let card_name = ""
     let sanitzed_card = sanitizeCardName(card);
@@ -70,13 +90,13 @@ const prettyResponse = function(cardFound) {
 
 const EdhRecSearch = ({ query, commanderName }) => {
     const delayTask = useAsyncTaskDelay(500);
-    const fetchTop = useAsyncTask(fetchEdhRecTask);
+    const fetchTop = useAsyncTask(fetchRecomendations);
     const combinedTask = useAsyncCombineSeq(delayTask, fetchTop);
     useAsyncRun(combinedTask);
     if (delayTask.pending) return <CircularProgress/>;
     if (fetchTop.aborted) return <div>...</div>;
-    if (fetchTop.error) return <div>{fetchTop.error}</div>;
-    if (fetchTop.pending) return <div>{fetchTop.abort}</div>;
+    if (fetchTop.error) return <div>Error while fetching data...</div>;
+    if (fetchTop.pending) return <div>Aborted</div>;
     const cardFound = isCardRecomended(fetchTop.result,query )
     return(prettyResponse(cardFound));
 }
