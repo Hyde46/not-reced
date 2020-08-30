@@ -2,22 +2,59 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import './App.css';
 import ReactDOM from 'react-dom';
-import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import Typography from '@material-ui/core/Typography';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
+
+
+import EdhRecSearch from './EdhRecSearch.js';
+
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: [
+      'Nunito',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif'
+    ].join(','),
+  }
+});
 
 function App() {
-  const [date, setDate] = useState(null);
-  useEffect(() => {
-    async function getDate() {
-      const res = await fetch('/api/date');
-      const newDate = await res.text();
-      setDate(newDate);
-    }
-    getDate();
-  }, []);
+  // searching state while app is looking for card name in list
+  const [searching, setSearching] = useState(false);
+  // state determined by result of searchCard()
+  // if not found, isNotReced is true
+  const [isNotReced, setIsReced] = useState(null);
+
+  const [query, setQuery] = useState('');
+
+  function handleChange(e) {
+    setQuery(e.target.value);
+  }
+
   return (
-    <Button variant="contained" color="primary">
-    Hello World
-  </Button>
+    
+    <ThemeProvider theme={theme}>
+      <div className="App" style={{margin: "125px"}}>
+        <center>
+
+          <Typography variant="h3" component="h3">
+            Hipster EDH Deck helper
+          </Typography>
+
+          <div style={{margin: "55px"}}>
+            <form noValidate autoComplete="off">
+              <TextField value={query} id="outlined-basic" label="Cardname" variant="outlined" onChange={handleChange} />
+            </form>
+          </div>
+          {query && <EdhRecSearch query={query}/>}
+        </center>
+      </div>
+    </ThemeProvider>
   );
 }
 
