@@ -11,18 +11,18 @@ import {
   } from 'react-hooks-async';
 
 
-const fetchEdhRec = async ({signal}, id) => {
-    //const cors_url = `https://cors-anywhere.herokuapp.com/https://edhrec-json.s3.amazonaws.com/en/top.json`;
+const fetchEdhRecTask = async ({signal}, id) => {
     const url = `https://edhrec-json.s3.amazonaws.com/en/top.json`;
     const response = await fetch(url, { signal });
     const data = await response.json();
     return data;
   }
 
+
 const sanitizeCardName = function(cardName) {
     cardName = cardName.toLowerCase();
     // Remove special characters
-    cardName = cardName.replace(/[&\/#,+()$~%.'":*?<>{}]/g, '');
+    cardName = cardName.replace(/[&\/#,+()$~%.'`":*?<>{}]/g, '');
     // replace space with `-`
     cardName = cardName.replace(/[\s]/g, '-');
     return cardName;
@@ -68,16 +68,16 @@ const prettyResponse = function(cardFound) {
 }
   
 
-const EdhRecSearch = ({ query }) => {
+const EdhRecSearch = ({ query, commanderName }) => {
     const delayTask = useAsyncTaskDelay(500);
-    const fetchTask = useAsyncTask(fetchEdhRec);
-    const combinedTask = useAsyncCombineSeq(delayTask, fetchTask);
+    const fetchTop = useAsyncTask(fetchEdhRecTask);
+    const combinedTask = useAsyncCombineSeq(delayTask, fetchTop);
     useAsyncRun(combinedTask);
     if (delayTask.pending) return <CircularProgress/>;
-    if (fetchTask.aborted) return <div>...</div>;
-    if (fetchTask.error) return <div>fetchTask.error</div>;
-    if (fetchTask.pending) return <div>fetchTask.abort</div>;
-    const cardFound = isCardRecomended(fetchTask.result,query )
+    if (fetchTop.aborted) return <div>...</div>;
+    if (fetchTop.error) return <div>{fetchTop.error}</div>;
+    if (fetchTop.pending) return <div>{fetchTop.abort}</div>;
+    const cardFound = isCardRecomended(fetchTop.result,query )
     return(prettyResponse(cardFound));
 }
 

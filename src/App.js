@@ -30,6 +30,8 @@ function App() {
   // if not found, isNotReced is true
   const [isNotReced, setIsReced] = useState(null);
 
+  const [commanderName, setCommanderName] = useState(null);
+
   const [query, setQuery] = useState('');
 
   function handleChange(e) {
@@ -47,11 +49,12 @@ function App() {
           </Typography>
 
           <div style={{marginTop: "55px", marginBottom: "55px"}}>
+          <TextField value={commanderName} id="outlined-basic" label="Commander" variant="outlined" style={{marginBottom: "15px"}}/>
             <form noValidate autoComplete="off">
               <TextField value={query} id="outlined-basic" label="Cardname" variant="outlined" onChange={handleChange} />
             </form>
           </div>
-          {query && <EdhRecSearch query={query}/>}
+          {query && <EdhRecSearch query={query} commander={commanderName}/>}
         </center>
       </div>
     </ThemeProvider>
