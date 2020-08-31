@@ -86,7 +86,7 @@ const prettyResponse = function (cardFound, cardData, commanderCardData) {
                 <CloseIcon style={{ color: "#ED2939", fontSize: 40 }} />
                 <p>
                     <a href={card_link} target="_blank">{data[1]} </a>
-                    recomended by EDHRec!
+                    recommended by EDHRec!
                 </p>
             </div>
         );
@@ -94,7 +94,7 @@ const prettyResponse = function (cardFound, cardData, commanderCardData) {
         return (
             <div>
                 <DoneAllIcon color="primary" style={{ fontSize: 40 }} />
-                <p> Card not recomended by EDHRec!</p>
+                <p> Card not recommended by EDHRec!</p>
             </div>
         );
     }
